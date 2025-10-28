@@ -1,7 +1,7 @@
 body {
     font-family: Arial, sans-serif;
     text-align: center;
-    background-color: #f3f3f3; /* 전체 배경색 */
+    background-color: #f3f3f3;
     color: #1a1a1a;
     margin: 0;
     padding: 20px;
@@ -15,7 +15,7 @@ h1 {
     color: #202020;
 }
 
-/* 게임 보드 레이아웃 */
+/* 게임 보드 영역 */
 #game-board {
     display: flex;
     flex-direction: column;
@@ -39,29 +39,45 @@ h1 {
     align-items: center;
     font-size: 1.5em;
     font-weight: bold;
-    /* 색상 변화 없이 깔끔한 상태 유지 */
 }
 
-/* JavaScript로 숫자가 채워졌을 때의 스타일 (선택 사항) */
-/* 타일에 숫자가 입력되면 테두리를 더 진하게 만듭니다. */
+/* 숫자가 채워졌을 때 타일 스타일 */
 .tile.filled-tile { 
     border-color: #333;
     background-color: #e6e6e6; 
 }
 
-
 /* 입력 영역 스타일 */
 #input-area {
     margin-top: 30px;
+    display: flex; /* 버튼과 입력 칸을 한 줄에 정렬 */
+    justify-content: center; /* 가운데 정렬 */
+    align-items: center;
+    gap: 15px; /* 입력 칸 컨테이너와 버튼 사이 간격 */
 }
 
-#guess-input {
-    padding: 10px;
-    font-size: 1.1em;
-    border: 2px solid #ccc;
-    margin-right: 10px;
-    width: 150px;
+/* 5개 입력 칸 컨테이너 스타일 */
+#guess-input-container {
+    display: flex;
+    gap: 5px; /* 입력 칸 사이의 간격 */
+}
+
+/* 개별 숫자 입력 칸 스타일 */
+.guess-digit-input {
+    width: 40px; 
+    height: 40px; 
+    padding: 0;
+    font-size: 1.5em;
     text-align: center;
+    border: 2px solid #ccc;
+    /* 모바일에서 숫자 입력 시 나오는 화살표 버튼 제거 */
+    -moz-appearance: textfield; 
+}
+/* 웹킷 브라우저에서 스핀 버튼 제거 */
+.guess-digit-input::-webkit-outer-spin-button,
+.guess-digit-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 #submit-button {
@@ -80,7 +96,7 @@ h1 {
 
 /* 메시지 영역 스타일 */
 #message-area {
-    min-height: 40px; /* 메시지 표시 공간 확보 */
+    min-height: 40px;
     font-weight: bold;
     margin-top: 15px;
     color: #333;
