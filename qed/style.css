@@ -1,0 +1,6 @@
+/* style.css 파일에 추가 */
+.tile.filled-tile {
+    /* 입력된 숫자가 있는 타일은 조금 더 강조 */
+    background-color: #e0e0e0; 
+    border-color: #333;
+}
