@@ -45,7 +45,6 @@ function checkGuess(guess, answer) {
     let exactMatches = 0;
 
     for (let i = 0; i < DIGITS; i++) {
-        // 정확한 위치와 숫자가 일치하는 경우
         if (guess[i] === answer[i]) {
             exactMatches++;
         }
@@ -74,7 +73,6 @@ function setupInputHandling() {
     digitInputs.forEach((input, index) => {
         // 1. 입력 시 다음 칸으로 자동 포커스 이동
         input.addEventListener('input', () => {
-            // max/min이 1~5로 설정되어 있어 1자리만 들어옴
             if (input.value.length === 1 && index < DIGITS - 1) {
                 digitInputs[index + 1].focus();
             }
@@ -98,15 +96,16 @@ function setupInputHandling() {
     });
 }
 
-// 게임 상태 업데이트
+// 게임 상태 업데이트 (승리 시 시도 횟수 표시 로직 포함)
 function updateGameStatus(guess, exactMatches) {
     
     // 1. 보드에 추측 숫자 표시 및 개수 메시지 출력
     displayGuess(guess, exactMatches); 
     
     if (exactMatches === DIGITS) {
-        // 정답을 맞춤 (5개 모두 맞음)
-        messageArea.textContent = `🎉 축하합니다! ${currentAttempt + 1}번 만에 정답 ${ANSWER}를 맞췄습니다!`;
+        // 🌟 정답을 맞춤: 시도 횟수 표시 🌟
+        const attemptsUsed = currentAttempt + 1;
+        messageArea.textContent = `🎉 축하합니다! 정답입니다! ${attemptsUsed}번 만에 맞췄어요!`;
         gameOver = true;
     } else if (attemptsLeft - 1 === 0) {
         // 모든 시도 횟수를 소진
@@ -122,29 +121,39 @@ function updateGameStatus(guess, exactMatches) {
         attemptsLeft--;
         currentAttempt++;
         
-        // 입력 필드 초기화 및 첫 번째 칸으로 포커스 이동
+        // 다음 시도를 위해 입력 필드 초기화 및 첫 번째 칸으로 포커스 이동
         digitInputs.forEach(input => input.value = '');
         digitInputs[0].focus(); 
     }
 }
 
-// '확인' 버튼 클릭 이벤트 핸들러
+// '확인' 버튼 클릭 이벤트 핸들러 (입력 미완료 시 처리 로직 추가)
 submitButton.addEventListener('click', () => {
     if (gameOver) return;
 
-    // 5개의 입력 필드에서 값을 합쳐서 guess 문자열 생성 및 최종 유효성 검사
+    // 5개의 입력 필드에서 값을 합쳐서 guess 문자열 생성
     let guess = '';
+    let incompleteIndex = -1; // 채워지지 않은 칸의 인덱스
+
     for (let i = 0; i < DIGITS; i++) {
         const inputVal = digitInputs[i].value;
         if (inputVal === '' || !/^[1-5]$/.test(inputVal)) {
-            messageArea.textContent = '❌ 5개의 칸을 1~5 사이의 숫자로 모두 채워야 합니다.';
-            digitInputs[i].focus();
-            return; 
+            incompleteIndex = i; // 채워지지 않은 첫 번째 칸을 찾음
+            break;
         }
         guess += inputVal;
     }
 
-    // 정답 확인 및 게임 상태 업데이트
+    if (incompleteIndex !== -1) {
+        // 🚨 5칸 중 하나라도 채워지지 않았다면
+        messageArea.textContent = '❌ 5개의 칸을 1~5 사이의 숫자로 모두 채워야 합니다.';
+        digitInputs[incompleteIndex].focus(); // 채워지지 않은 칸으로 포커스 이동
+        return; 
+    }
+
+    // 모든 칸이 채워졌다면 게임 로직 실행
+    // 메시지 초기화 (성공적으로 입력됐으므로)
+    messageArea.textContent = ''; 
     const exactMatches = checkGuess(guess, ANSWER);
     updateGameStatus(guess, exactMatches);
 });
@@ -153,10 +162,8 @@ submitButton.addEventListener('click', () => {
 // 엔터 키 입력 처리
 document.addEventListener('keypress', (e) => {
     if (e.key === 'Enter' && !gameOver) {
-        // 5번째 칸이 채워져 있으면 제출
-        if (digitInputs[DIGITS - 1].value.length === 1) {
-            submitButton.click();
-        }
+        // 엔터 시 바로 submitButton 클릭 이벤트 발생
+        submitButton.click();
     }
 });
 
